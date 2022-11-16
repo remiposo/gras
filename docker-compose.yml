@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  app:
+    image: gras
+    build:
+      args:
+        - target=dev
+    volumes:
+      - .:/app
+    environment:
+      GRAS_PORT: 8080
+      GRAS_DB_HOST: gras-db
+      GRAS_DB_PORT: 3306
+      GRAS_DB_USER: gras
+      GRAS_DB_PASSWORD: gras
+      GRAS_DB_NAME: gras
+      GRAS_KVS_HOST: gras-kvs
+      GRAS_KVS_PORT: 6379
+    ports:
+      - "8080:8080"
+  db:
+    image: mysql:8.0.29
+    platform: linux/amd64
+    container_name: gras-db
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_USER: gras
+      MYSQL_PASSWORD: gras
+      MYSQL_DATABASE: gras
+    volumes:
+      - gras-db-data:/var/lib/mysql
+      - $PWD/_tools/mysql/conf.d:/etc/mysql/conf.d:cached
+    ports:
+      - "33306:3306"
+  kvs:
+    image: redis:latest
+    container_name: gras-kvs
+    ports:
+      - "36379:6379"
+    volumes:
+      - gras-kvs-data:/data
+volumes:
+  gras-db-data:
+  gras-kvs-data:
